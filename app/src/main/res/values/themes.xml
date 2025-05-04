@@ -1,0 +1,11 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.SafeMonitor" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your colors here -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryDark">@color/purple_700</item>
+        <item name="colorAccent">@color/teal_200</item>
+        <!-- If you use MaterialComponents widgets, you can also use
+             parent="Theme.MaterialComponents.DayNight.NoActionBar" -->
+    </style>
+</resources>
