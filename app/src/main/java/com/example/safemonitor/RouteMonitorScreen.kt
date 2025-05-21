@@ -1,4 +1,5 @@
 // src/main/java/com/example/safemonitor/RouteMonitorScreen.kt
+// screen for monitoring the route in real time
 package com.example.safemonitor
 
 import android.annotation.SuppressLint
@@ -29,7 +30,7 @@ import org.tensorflow.lite.Interpreter
 @Composable
 fun RouteMonitorScreen(
     interpreter: Interpreter,
-    onDeviation: (LatLng) -> Unit    // new callback
+    onDeviation: (LatLng) -> Unit    // callback when deviation is detected
 ) {
     val context = LocalContext.current
     val fusedLocationClient = remember {
@@ -38,21 +39,22 @@ fun RouteMonitorScreen(
     val cameraState = rememberCameraPositionState()
     val snackbarHost = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-
+    // state variables
     var currentLoc by remember { mutableStateOf<LatLng?>(null) }
     var startLoc   by remember { mutableStateOf<LatLng?>(null) }
     var endLoc     by remember { mutableStateOf<LatLng?>(null) }
     var routePath  by remember { mutableStateOf<List<LatLng>>(emptyList()) }
     var running    by remember { mutableStateOf(false) }
-    var stopSecs   by remember { mutableStateOf(0L) }
-    var alertFlag  by remember { mutableStateOf(false) }
+    var stopSecs   by remember { mutableStateOf(0L) }       // time the vehicle has been stopped
+    var alertFlag  by remember { mutableStateOf(false) }    // used to trigger alert when deviation detected 
 
-    // high-accuracy updates every 5s
+    // high-accuracy location updates request
     val locReq = remember {
         LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000L)
             .setMinUpdateIntervalMillis(3000L)
             .build()
     }
+    // Location callback for receiving periodic updates
     val locCb = remember {
         object : LocationCallback() {
             override fun onLocationResult(res: LocationResult) {
@@ -60,6 +62,7 @@ fun RouteMonitorScreen(
                     val ll = LatLng(loc.latitude, loc.longitude)
                     currentLoc = ll
                     if (loc.speed * 3.6f < 1f) stopSecs += 5 else stopSecs = 0
+                    // check for deviations if monitoring is active and a path is defined
                     if (running && routePath.isNotEmpty()) {
                         checkForDeviation(interpreter, loc, routePath, stopSecs) {
                             alertFlag = it
@@ -70,6 +73,7 @@ fun RouteMonitorScreen(
         }
     }
 
+    // setup location updates and initialize camera view
     LaunchedEffect(Unit) {
         fusedLocationClient.lastLocation.addOnSuccessListener { it?.let {
             currentLoc = LatLng(it.latitude, it.longitude)
@@ -80,6 +84,7 @@ fun RouteMonitorScreen(
             locReq, locCb, Looper.getMainLooper()
         )
     }
+    // stop location updates when the screen is closed
     DisposableEffect(Unit) {
         onDispose { fusedLocationClient.removeLocationUpdates(locCb) }
     }
@@ -90,6 +95,7 @@ fun RouteMonitorScreen(
                 .padding(pad)
                 .fillMaxSize()
         ) {
+            // top bar with start/stop monitoring button
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -98,6 +104,7 @@ fun RouteMonitorScreen(
             ) {
                 Button(onClick = {
                     running = !running
+                    // fetch the route if the monitoring is starting and the points are set
                     if (running && startLoc != null && endLoc != null) {
                         scope.launch {
                             fetchRoute(
