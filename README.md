@@ -76,6 +76,4 @@ When risks are detected, the app sends alerts to **trusted contacts via SMS**, w
 - No personal data is stored after the ride ends
 - Fully compliant with:
   - **Ghana Data Protection Act**
-  - **General Data Protection Regulation (GDPR)**
-
 ---
