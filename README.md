@@ -26,7 +26,7 @@ Detects distress signals like **screams** and **angry speech** using mel spectro
 Uses the Android front camera and a TFLite model to detect real-time emotions such as **fear**, **anger**, and discomfort.
 
 ### Route-Based Geofencing Module
-Monitors if the ride deviates from the expected path using GPS, a classification model, and Google Maps API—without needing constant internet.
+Monitors if the ride deviates from the expected path using GPS, a classification model, and Google Maps API without needing constant internet.
 
 When risks are detected, the app sends alerts to **trusted contacts via SMS**, with fallback logic for escalation. All personal data is encrypted and erased after the trip in compliance with data protection laws.
 
@@ -43,7 +43,7 @@ When risks are detected, the app sends alerts to **trusted contacts via SMS**, w
 1. Clone the GitHub repository:  
       [https://github.com/fremariab/guardian.git](https://github.com/fremariab/guardian.git)
 
-2. Open the project in **Android Studio Arctic Fox or later**
+2. Open the project in **Android Studio Ladybug (2024.2.1) or later**
 
 3. Grant the required permissions in the app manifest:
    - `ACCESS_FINE_LOCATION`
@@ -52,7 +52,7 @@ When risks are detected, the app sends alerts to **trusted contacts via SMS**, w
 4. Build and deploy the app to an Android device
 
 5. On Launch:
-   - Use **Google Places autocomplete** to set the ride destination
+   - Use **Google Places Autocomplete** to set the ride destination
    - Start ride monitoring to activate all safety modules
    - If a threat is detected:
      - App will prompt user to confirm or cancel
